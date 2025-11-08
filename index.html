@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>CyberTube — Loading</title>
+<style>
+:root{
+  --bg:#020204;
+  --neon:#00ff9f;
+  --accent:#00e6ff;
+  --muted:#7a7a7a;
+  --glass:rgba(255,255,255,0.03);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--bg);overflow:hidden;color:#e6f7ef;}
+/* MATRIX */
+.matrix{position:fixed;inset:0;z-index:0;opacity:0.25;}
+.matrix canvas{width:100%;height:100%;display:block;}
+/* Loader */
+.loader-wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:20;backdrop-filter:blur(4px);}
+.loader{width:min(820px,92%);max-width:1000px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:16px;padding:28px;box-shadow:0 10px 40px rgba(0,0,0,0.7),0 0 40px rgba(0,255,160,0.04);border:1px solid rgba(0,255,160,0.06);transform-origin:center;text-align:center;position:relative;overflow:hidden;}
+
+.loader-img {
+  width:48px;
+  height:48px;
+  border-radius:10px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg, rgba(0, 255, 140, 0.18), rgba(0, 200, 255, 0.12));
+  color:#001;
+  box-shadow: 0 6px 22px rgba(0, 255, 150, 0.06);
+  border: 1px solid rgba(0, 255, 150, 0.06);
+}
+
+.brand{font-weight:700;letter-spacing:6px;font-size:28px;color:var(--neon);text-shadow:0 0 10px rgba(0,255,160,0.12);display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px;}
+.brand .dot{width:12px;height:12px;border-radius:50%;background:linear-gradient(45deg,var(--neon),var(--accent));box-shadow:0 0 16px var(--neon);filter:drop-shadow(0 0 6px var(--accent));}
+.scanner{position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,transparent,rgba(0,255,160,0.2),transparent);transform:translateY(-120%);animation:scan 1.8s linear infinite;pointer-events:none;}
+@keyframes scan{0%{transform:translateY(-30%);opacity:0}10%{opacity:1}50%{transform:translateY(110%);opacity:1}100%{transform:translateY(140%);opacity:0}}
+.term{background:linear-gradient(180deg, rgba(0,0,0,0.6), rgba(255,255,255,0.02));border-radius:10px;padding:18px;text-align:left;font-family:"Courier New", monospace;font-size:13.5px;color:#bfffe3;box-shadow:inset 0 1px 0 rgba(255,255,255,0.02);min-height:120px;margin-bottom:14px;overflow:hidden;border:1px solid rgba(0,255,160,0.03);}
+.term .line{opacity:0;transform:translateY(6px);animation:appear 0.6s forwards;}
+.term .line.delay1{animation-delay:0.25s;} .term .line.delay2{animation-delay:0.45s;} .term .line.delay3{animation-delay:0.65s;}
+@keyframes appear{to{opacity:1;transform:none}}
+.progress-wrap{margin-top:6px;}
+.progress{background:rgba(255,255,255,0.03);border-radius:8px;height:12px;overflow:hidden;position:relative;}
+.progress .bar{height:100%;width:0%;background:linear-gradient(90deg,var(--neon),var(--accent));box-shadow:0 6px 20px rgba(0,255,160,0.08);transition:width 0.2s linear;}
+.percent{margin-top:8px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px;color:var(--muted);}
+main.app{position:relative;z-index:2;opacity:0;transform:translateY(20px) scale(0.995);transition:opacity 600ms cubic-bezier(.2,.9,.2,1), transform 600ms cubic-bezier(.2,.9,.2,1);min-height:100vh;padding:48px;}
+main.app.revealed{opacity:1;transform:none;transition-delay:120ms;}
+.card{max-width:1000px;margin:0 auto;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:28px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 40px rgba(0,0,0,0.6);color:#dfffea;}
+h1{font-size:28px;color:var(--neon);letter-spacing:1px;margin-bottom:6px;} p.muted{color:var(--muted);margin-bottom:16px;}
+.glitch{position:relative;animation:none;}
+.glitch.reveal{animation: glitchIn 700ms linear;}
+@keyframes glitchIn{0%{clip-path:inset(0 0 100% 0);opacity:0;transform:translateY(8px);}20%{clip-path:inset(40% 0 0 0);opacity:1}40%{clip-path:inset(10% 0 60% 0);}60%{clip-path:inset(0 0 0 0);}100%{clip-path:inset(0 0 0 0);transform:none}}
+@media (max-width:640px){.brand{font-size:18px;letter-spacing:3px}.term{font-size:12px}}
+</style>
+</head>
+<body>
+<div class="matrix"><canvas id="matrixCanvas"></canvas></div>
+
+<div class="loader-wrap" role="status" aria-live="polite">
+  <div class="loader" id="loader">
+
+  <img class="loader-img" src="nav-img.jpg" alt="CyberTube"/>  
+    <div class="scanner"></div>
+    <div class="brand"><div class="dot"></div>CYBER TUBE</div>
+
+    <div class="term" id="term">
+      <div class="line delay1">&gt; initializing environment...</div>
+      <div class="line delay2">&gt; loading secure modules...</div>
+      <div class="line delay3">&gt; establishing sandbox...</div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress"><div class="bar" id="bar"></div></div>
+      <div class="percent"><span id="statusText">Starting...</span><strong id="pct">0%</strong></div>
+    </div>
+  </div>
+</div>
+
+<main class="app" id="app" aria-hidden="true">
+  <div class="card glitch" id="mainCard" tabindex="0">
+    <h1>Preparing your workspace…</h1>
+    <p class="muted">Loading content — please wait.</p>
+  </div>
+</main>
+
+<script>
+/* ===== SPEED CONFIG (FAST) ===== */
+const CHAR_DELAY_BASE = 1;      // typing base delay
+const CHAR_DELAY_JITTER = 3;    // random delay
+const LINE_POST_PAUSE = 120;    // pause after line
+const INITIAL_START_DELAY = 300;// start typing after
+const MATRIX_INTERVAL = 45;     // matrix update speed
+const PROGRESS_RANDOM_EXTRA = 6;// bar random extra
+const POST_FADE_DELAY = 100;    // fade delay
+/* ================================== */
+const REDIRECT_URL = 'main.html';
+
+/* MATRIX RAIN */
+(function matrixRain(){
+  const canvas = document.getElementById('matrixCanvas');
+  const ctx = canvas.getContext('2d');
+  let w,h,cols,size=16,drops;
+  function setup(){ w = canvas.width = innerWidth; h = canvas.height = innerHeight; cols = Math.floor(w/size)+1; drops = Array(cols).fill(0).map(()=>Math.floor(Math.random()*h/size)); }
+  function draw(){
+    ctx.fillStyle = 'rgba(0,0,0,0.08)'; ctx.fillRect(0,0,w,h);
+    ctx.fillStyle = 'rgba(0,255,160,0.9)'; ctx.font = size + 'px monospace';
+    for(let i=0;i<cols;i++){
+      const text = String.fromCharCode(0x30A0 + (Math.random()*96|0));
+      ctx.fillText(text, i*size, drops[i]*size);
+      if(drops[i]*size > h && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    }
+  }
+  window.addEventListener('resize', setup);
+  setup();
+  setInterval(draw, MATRIX_INTERVAL);
+})();
+
+/* Loader typing + progress */
+(function(){
+  const lines = [
+    "> Secure channel: established",
+    "> Fingerprint: 3b:7f:2c:9a:11:d4",
+    "> Policy check: PASS",
+    "> Loading modules: core, sandbox, logger",
+    "> Running preflight security tests",
+    "> Safe environment verified",
+    "> Welcome to Ethical Hacking Portal — read the rules and stay legal."
+  ];
+
+  const term = document.getElementById('term');
+  const bar = document.getElementById('bar');
+  const pct = document.getElementById('pct');
+  const statusText = document.getElementById('statusText');
+  const loaderWrap = document.querySelector('.loader-wrap');
+  let idx = 0, progress = 0;
+
+  function typeLine(text, cb){
+    const el = document.createElement('div');
+    el.className = 'line';
+    term.appendChild(el);
+    let i = 0;
+    (function step(){
+      if(i <= text.length){
+        el.textContent = text.slice(0,i);
+        i++;
+        setTimeout(step, CHAR_DELAY_BASE + Math.random()*CHAR_DELAY_JITTER);
+      } else {
+        setTimeout(cb, LINE_POST_PAUSE);
+      }
+    })();
+  }
+
+  function updateProgress(add){
+    progress = Math.min(100, progress + add);
+    bar.style.width = progress + '%';
+    pct.textContent = Math.round(progress) + '%';
+  }
+
+  function next(){
+    if(idx >= lines.length){
+      progress = 100;
+      bar.style.width = '100%';
+      pct.textContent = '100%';
+      statusText.textContent = 'complete';
+      setTimeout(()=> doFadeAndRedirect(), 300);
+      return;
+    }
+    const text = lines[idx];
+    statusText.textContent = 'Processing...';
+    typeLine(text, ()=>{
+      updateProgress(100/lines.length + (Math.random()*PROGRESS_RANDOM_EXTRA));
+      idx++;
+      setTimeout(next, 120 + Math.random()*160);
+    });
+  }
+
+  function doFadeAndRedirect(){
+    loaderWrap.style.transition = 'opacity 560ms ease, transform 560ms ease';
+    loaderWrap.style.opacity = '0';
+    loaderWrap.style.transform = 'translateY(-12px)';
+    setTimeout(()=> window.location.href = REDIRECT_URL, POST_FADE_DELAY);
+  }
+
+  setTimeout(next, INITIAL_START_DELAY);
+})();
+</script>
+</body>
+</html>

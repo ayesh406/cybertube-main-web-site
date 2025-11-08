@@ -1,0 +1,27 @@
+.top-main {
+  padding: 80px 20px 20px;
+  margin-top: 50px;
+  margin-bottom: 0px;
+}
+
+.memer-text {
+    margin-top: 20%;
+    margin-bottom: 10%;
+    border-radius: 12px;
+    border: 1px solid #00FF00;
+    padding: 10px;
+  }
+  
+  .memer-text > p {
+    margin-left: 5%;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  
+  footer {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #444;
+  }
